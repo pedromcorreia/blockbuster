@@ -1,12 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe '/movies', type: :request do
-  let(:valid_attributes) do
-    {
-      plot: 'Plot',
-      title: 'title'
-    }
-  end
+  let(:valid_attributes) { build(:movie) }
 
   let(:invalid_attributes) do
     {
@@ -16,16 +11,18 @@ RSpec.describe '/movies', type: :request do
   end
 
   describe 'GET /index' do
-    it 'renders a successful response' do
-      build_list(:movie, 5)
+    it 'renders a successful response ordered by created_at' do
+      create_list(:movie, 5)
       get movies_url, as: :json
       expect(response).to be_successful
+      expect(Movie.all.order(:created_at).pluck(:id))
+        .to eq(JSON.parse(response.body).map { |a| a['id'] })
     end
   end
 
   describe 'GET /show' do
     it 'renders a successful response' do
-      movie = Movie.create! valid_attributes
+      movie = create(:movie)
       get movie_url(movie), as: :json
       expect(response).to be_successful
     end
