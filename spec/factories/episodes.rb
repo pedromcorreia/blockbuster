@@ -4,6 +4,6 @@ FactoryBot.define do
   factory :episode do
     title { 'title' }
     plot { 'plot' }
-    season { nil }
+    season { create(:season) }
   end
 end

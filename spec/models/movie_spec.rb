@@ -28,4 +28,12 @@ RSpec.describe Movie, type: :model do
   it 'is valid valid attributes' do
     expect(subject).to be_valid
   end
+
+  it 'should validate uniqueness of title' do
+    movie1 = create(:movie)
+    movie = build(:movie, title: movie1.title)
+    expect { movie.save! }.to raise_error(
+      ActiveRecord::RecordInvalid
+    )
+  end
 end

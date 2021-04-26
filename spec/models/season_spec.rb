@@ -3,5 +3,47 @@
 require 'rails_helper'
 
 RSpec.describe Season, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  subject { create(:season) }
+
+  it 'is not valid without a title' do
+    subject.title = nil
+    expect(subject).to_not be_valid
+  end
+
+  it 'is not valid with blank a title' do
+    subject.title = ''
+    expect(subject).to_not be_valid
+  end
+
+  it 'is not valid without a plot' do
+    subject.plot = nil
+    expect(subject).to_not be_valid
+  end
+
+  it 'is not valid with blank a title' do
+    subject.plot = ''
+    expect(subject).to_not be_valid
+  end
+
+  it 'is not valid without a number' do
+    subject.number = nil
+    expect(subject).to_not be_valid
+  end
+
+  it 'is not valid with blank a number' do
+    subject.number = ''
+    expect(subject).to_not be_valid
+  end
+
+  it 'is valid valid attributes' do
+    expect(subject).to be_valid
+  end
+
+  skip 'should validate uniqueness of number' do
+    season1 = create(:season)
+    season = build(:season, number: season1.number)
+    expect { season.save! }.to raise_error(
+      ActiveRecord::RecordInvalid
+    )
+  end
 end
