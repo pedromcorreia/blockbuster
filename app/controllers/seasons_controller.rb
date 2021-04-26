@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class SeasonsController < ApplicationController
-  before_action :set_season, only: [:show, :update, :destroy]
+  before_action :set_season, only: %i[show update destroy]
 
   # GET /seasons
   def index
@@ -39,13 +41,14 @@ class SeasonsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_season
-      @season = Season.find(params[:id])
-    end
 
-    # Only allow a trusted parameter "white list" through.
-    def season_params
-      params.require(:season).permit(:title, :plot, :number)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_season
+    @season = Season.find(params[:id])
+  end
+
+  # Only allow a trusted parameter "white list" through.
+  def season_params
+    params.require(:season).permit(:title, :plot, :number)
+  end
 end

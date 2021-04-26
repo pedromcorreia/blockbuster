@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Purchase < ApplicationRecord
   belongs_to :purchaseble, polymorphic: true
   belongs_to :user
