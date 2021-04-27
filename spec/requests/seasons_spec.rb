@@ -15,6 +15,7 @@ RSpec.describe '/seasons', type: :request do
     it 'renders a successful response' do
       create(:season)
       get seasons_url, as: :json
+      byebug
       expect(response).to be_successful
       expect(Season.all.order(:created_at).pluck(:id))
         .to eq(JSON.parse(response.body).map { |a| a['id'] })

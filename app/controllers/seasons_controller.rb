@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 class SeasonsController < ApplicationController
-  before_action :set_season, only: %i[show update destroy]
+  before_action :set_season, only: %i[show]
 
   # GET /seasons
   def index
     @seasons = Season.all
-
-    render json: @seasons
+    render jsonapi: Season.all, include: [:author, comments: [:author]],
+           fields: { users: [:name, :email],
+                     posts: [:title, :content] }
   end
 
   # GET /seasons/1
