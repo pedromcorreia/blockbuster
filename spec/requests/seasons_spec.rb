@@ -12,13 +12,24 @@ RSpec.describe '/seasons', type: :request do
   end
 
   describe 'GET /index' do
-    it 'renders a successful response' do
-      create(:season)
+    let(:season) { create(:season) }
+    before do
+      create(:episode, season: season)
       get seasons_url, as: :json
-      byebug
+    end
+
+    it 'renders a successful response' do
       expect(response).to be_successful
-      expect(Season.all.order(:created_at).pluck(:id))
-        .to eq(JSON.parse(response.body).map { |a| a['id'] })
+    end
+
+    it 'renders a successful created_at response' do
+      expect(JSON.parse(response.body).map { |a| a['id'] })
+        .to eq(Season.all.order(:created_at).pluck(:id))
+    end
+
+    it 'renders a with episodes' do
+      expect(JSON.parse(response.body).first['episodes'].count)
+        .to eq(season.episodes.count)
     end
   end
 

@@ -5,10 +5,9 @@ class SeasonsController < ApplicationController
 
   # GET /seasons
   def index
-    @seasons = Season.all
-    render jsonapi: Season.all, include: [:author, comments: [:author]],
-           fields: { users: [:name, :email],
-                     posts: [:title, :content] }
+    @seasons = Season.eager_load(:episodes).order(:number)
+
+    render json: @seasons, include: ['episodes']
   end
 
   # GET /seasons/1
