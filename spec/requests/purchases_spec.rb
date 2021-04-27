@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe '/purchases', type: :request do
+  include ActiveSupport::Testing::TimeHelpers
   let(:user) { create(:user) }
   let(:movie) { create(:movie) }
   let(:purchase) { create(:purchase, user: user) }
@@ -8,28 +9,22 @@ RSpec.describe '/purchases', type: :request do
   let(:invalid_attributes) { build(:purchase, quality: 'invalid') }
 
   describe 'GET /index' do
-    it 'renders a successful response' do
+    before do
+      travel_to(1.days.ago)
+      create_list(:purchase, 2, user: user)
+      travel_back
+      travel_to(3.days.ago)
+      create_list(:purchase, 3, user: user)
+      travel_back
       get "/users/#{user.id}/purchases", as: :json
+    end
+    it 'renders a successful response' do
       expect(response).to be_successful
     end
-  end
-
-  describe 'GET /show' do
-    context 'with same user' do
-      it 'renders a successful response' do
-        get "/users/#{user.id}/purchases/#{purchase.id}", as: :json
-        expect(response).to be_successful
-        expect(Purchase.new(JSON.parse(response.body))).to eq(Purchase.find(purchase.id))
-      end
-    end
-
-    context 'with not same user' do
-      it 'renders a JSON response with not_found' do
-        user1 = create(:user)
-        get "/users/#{user1.id}/purchases/#{purchase.id}", as: :json
-        expect(response).not_to be_successful
-        expect(JSON.parse(response.body)['error']).to include("Couldn't find Purchase")
-      end
+    it 'renders a successful response order remaining times' do
+      response_list =
+        JSON.parse(response.body)['data'].map { |i| i['attributes']['remaining_time'] }
+      expect(response_list).to eq([24, 24])
     end
   end
 
@@ -44,7 +39,7 @@ RSpec.describe '/purchases', type: :request do
       it 'renders a JSON response with the new purchase' do
         post "/users/#{user.id}/purchases/", params: { purchase: valid_attributes }, as: :json
         expect(response).to have_http_status(:created)
-        expect(response.content_type).to match(a_string_including('application/json'))
+        expect(response.content_type).to match(a_string_including('application/vnd.api+json; charset=utf-8'))
       end
     end
 

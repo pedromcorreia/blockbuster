@@ -2,24 +2,19 @@ class PurchasesController < ApplicationController
   before_action :set_user
   before_action :set_purchase, only: [:show]
 
-  # GET /purchases
+  # GET /users/:user_id/purchases
   def index
-    @purchases = @user.purchases.all
-
-    render json: @purchases
+    @purchases = @user.purchases.available
+    render jsonapi: @purchases
   end
 
-  # GET /purchases/1
-  def show
-    render json: @purchase
-  end
-
-  # POST /purchases
+  # POST /users/:user_id/purchases
   def create
     @purchase = @user.purchases.new(purchase_params)
 
     if @purchase.save
-      render json: :show, status: :created, location: user_purchases_url(@purchase)
+
+      render jsonapi: @purchase, status: :created
     else
       render json: @purchase.errors, status: :unprocessable_entity
     end
